@@ -5,12 +5,8 @@ const { Category, Subcategory, Book } = require('../models');
 
 router.get('/categories', async (req, res, next) => {
   try {
-    console.log('cat', typeof Category);
-    console.log('find all', typeof Category.findAll);
-
     const categories = await Category.findAll({include: [{model: Subcategory, as: 'Subcategories'}]});
     const sub = await categories[0].getSubcategories();
-    console.log('sub', sub);
     res.send(categories);
   } catch(err) {
     return next(err);
