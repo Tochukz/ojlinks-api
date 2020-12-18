@@ -1,34 +1,20 @@
-const {Model, INTEGER, STRING, DATE, } = require('sequelize');
-const sequelize = require('../database/sequelize');
-
-class Category extends Model {}
-
-Category.init(
-    {
-        categoryId: {
-            type: INTEGER,
-            allowNull: false,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        category: {
-            type: STRING,
-            allowNull: false,
-        },
-        createdAt: {
-            type: DATE,
-        },
-        updatedAt: {
-            type: DATE,
-        },
-        deletedAt: {
-            type: DATE,
-        }
-   }, 
-   {
+'use strict';
+const { Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+class Category extends Model {
+    static associate(models) {    
+      models.Category.hasMany(models.Subcategory, { as: 'Subcategories', foreignKey: 'categoryId', sourceKey: 'categoryId'});
+    }
+  };
+  Category.init({
+    categoryId: {
+      type: DataTypes.INTEGER,      
+      primaryKey: true,    
+    },
+    name: DataTypes.STRING
+  }, {
     sequelize,
-    modelName: 'category'
-   }
-);
-
-module.exports = Category;
+    modelName: 'Category',
+  });
+  return Category;
+};

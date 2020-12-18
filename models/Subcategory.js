@@ -1,38 +1,24 @@
-const {Model, INTEGER, STRING, DATE, } = require('sequelize');
-const sequelize = require('../database/sequelize');
-
-class Subcategory extends Model {}
-
-Subcategory.init(
-    {
-        subcategoryId: {
-            type: INTEGER,
-            allowNull: false,
-            primaryKey: true,
-            autoIncrement: true,
-        },      
-        subcategory: {
-            type: STRING,
-            allowNull: false,
-        },
-        categoryId: {
-            type: INTEGER,
-            allowNull: false,
-        },
-        createdAt: {
-            type: DATE,
-        },
-        updatedAt: {
-            type: DATE,
-        },
-        deletedAt: {
-            type: DATE,
-        }
-   }, 
-   {
+'use strict';
+const {Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Subcategory extends Model {
+    static associate(models) {
+      models.Subcategory.belongsTo(models.Category, {foreignKey: 'categoryId', sourceKey: 'categoryId'});
+      models.Subcategory.hasMany(models.Book, {as: 'Books', foreignKey: 'subcategoryId', sourceKey: 'subcategoryId'});
+    }
+  };
+  Subcategory.init({
+    subcategoryId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
+    categoryId: {
+      type: DataTypes.INTEGER,
+    },
+    name: DataTypes.STRING
+  }, {
     sequelize,
-    modelName: 'subcategory'
-   }
-);
-
-module.exports = Subcategory;
+    modelName: 'Subcategory',
+  });
+  return Subcategory;
+};
