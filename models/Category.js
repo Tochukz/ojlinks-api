@@ -15,6 +15,7 @@ class Category extends Model {
   }, {
     sequelize,
     modelName: 'Category',
+    tableName: 'categories',
   });
   return Category;
 };
