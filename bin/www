@@ -3,17 +3,18 @@
 /**
  * Module dependencies.
  */
-
-var app = require('../app');
 var debug = require('debug')('ojlinks-api:server');
 var http = require('http');
 const config = require('config');
+const socketIO = require("socket.io");
+const axios = require("axios");
 
+var app = require('../app');
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(config.get('app.port') || '3000');
+var port = normalizePort(process.env.PORT || config.get('app.port') || '3000');
 app.set('port', port);
 
 /**
@@ -21,6 +22,45 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+/** Setup Socket Server */
+const io = socketIO(server);
+
+const getApiAndEmit = async socket => {
+    try {
+      let temperature;
+      if (process.env.NODE_ENV == "production") {
+        const res = await axios.get(`https://api.darksky.net/forecast/${config.get("app.darkSkyAPIKey")}/43.7695,11.2558`);
+        temperature = res.data.currently.temperature;       
+      } else {       
+        temperature = 0;
+        for(let i = 0; i < 4; i++) {
+          temperature += Math.round(Math.random() * 10); 
+        }      
+      }
+      console.log(`Temperature: ${temperature}`);
+      socket.emit("FromAPI", temperature); 
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        return (Number.random() * 10) + (Number.random() * 10) + (Number.random() * 10);
+    }
+}
+
+let interval;
+io.on("connection", socket => {
+    console.log("New client connected");
+     if (interval) {
+         clearInterval(interval);
+     }
+     interval = setInterval(() => getApiAndEmit(socket), 10000);
+     socket.on("disconnect", () => console.log("Client disconnected"));
+     socket.on('pingMsg', msg => {
+        console.log('ping', msg)
+        const reverseMsg = msg.split("").reverse().join("");
+        socket.emit('pongMsg', `- ${reverseMsg}`);
+     });
+});
+
 
 /**
  * Listen on provided port, on all network interfaces.
