@@ -28,8 +28,9 @@ const io = socketIO(server);
 
 const getApiAndEmit = async socket => {
     try {
+      const seconds = new Date().getSeconds();
       let temperature;
-      if (process.env.NODE_ENV == "production") {
+      if (process.env.NODE_ENV == "production" && (seconds < 20 || seconds >= 50  )) {
         const res = await axios.get(`https://api.darksky.net/forecast/${config.get("app.darkSkyAPIKey")}/43.7695,11.2558`);
         temperature = res.data.currently.temperature;       
       } else {       
@@ -42,7 +43,7 @@ const getApiAndEmit = async socket => {
       socket.emit("FromAPI", temperature); 
     } catch (error) {
         console.error(`Error: ${error}`);
-        return (Number.random() * 10) + (Number.random() * 10) + (Number.random() * 10);
+        return (Math.random() * 10) + (Math.random() * 10) + (Math.random() * 10);
     }
 }
 
