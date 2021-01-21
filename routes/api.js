@@ -35,7 +35,7 @@ router.get('/subcategories', async (req, res, next) => {
 router.get('/subcategories/:subcategoryId', async (req, res, next) => {
   try {
     const subcategoryId = req.params.subcategoryId;
-    const subcategories = await Subcategory.findAll({where: { subcategoryId }, include: [{model: Category, as: 'Category'}, {model: Book, as: 'Books'}]});
+    const subcategories = await Subcategory.findOne({where: { subcategoryId }, include: [{model: Category, as: 'Category'}, {model: Book, as: 'Books'}]});
     res.send(subcategories);
   } catch(err) {
     return next(err);

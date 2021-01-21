@@ -39,7 +39,7 @@ const getApiAndEmit = async socket => {
           temperature += Math.round(Math.random() * 10); 
         }      
       }
-      console.log(`Temperature: ${temperature}`);
+      //console.log(`Temperature: ${temperature}`);
       socket.emit("FromAPI", temperature); 
     } catch (error) {
         console.error(`Error: ${error}`);
