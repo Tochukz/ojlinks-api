@@ -30,6 +30,11 @@
 <script>
     $(document).ready(() => {
         const socket = io('http://localhost:8084');
+        
+        socket.on('connection', socket => console.log(`New Connection ${socket}`));
+        socket.on('connected', socket => console.log(`Connected ${socket}`));
+        socket.on('disconnect', socket => console.log(`Disconnect ${socket}`));
+        
         console.log('Connected with connection ID', socket.id);
         socket.on('FromAPI', temp => {         
            $('#temp').html(`Temperature at ${new Date().toGMTString()} is ${temp} &deg;C`);

@@ -49,17 +49,18 @@ const getApiAndEmit = async socket => {
 
 let interval;
 io.on("connection", socket => {
-    console.log("New client connected");
-     if (interval) {
-         clearInterval(interval);
-     }
-     interval = setInterval(() => getApiAndEmit(socket), 10000);
-     socket.on("disconnect", () => console.log("Client disconnected"));
-     socket.on('pingMsg', msg => {
-        console.log('ping', msg)
-        const reverseMsg = msg.split("").reverse().join("");
-        socket.emit('pongMsg', `- ${reverseMsg}`);
-     });
+  const {nsp, server, adapter, id, client, conn, rooms, acks, connected, disconnected, handshake, fns, flags, _rooms} = socket;
+  console.log(`New client connected: ${socket.id}`);
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => getApiAndEmit(socket), 10000);
+  socket.on("disconnect", () => console.log(`Client disconnected ${socket.id}`));
+  socket.on('pingMsg', msg => {
+  console.log('ping', msg)
+  const reverseMsg = msg.split("").reverse().join("");
+    socket.emit('pongMsg', `- ${reverseMsg}`);
+  });
 });
 
 
