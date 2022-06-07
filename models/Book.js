@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class Book extends Model {
     static associate(models) {
       // define association here
-      models.Book.belongsTo(models.Subcategory, {foreignKey: 'subcategoryId', sourceKey: 'subcategoryId'})
+      models.Book.belongsTo(models.Subcategory, {foreignKey: 'subcategoryId', sourceKey: 'subcategoryId', as: 'subcategory'})
     }
   };
   Book.init({
