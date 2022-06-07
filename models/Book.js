@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     bookId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true
     },
     title: DataTypes.STRING,
     author: DataTypes.STRING,

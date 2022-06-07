@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     adminId: {
       type: DataTypes.NUMBER,
       primaryKey: true,
+      autoIncrement: true
     },
     firstname: DataTypes.STRING,
     lastname: DataTypes.STRING,

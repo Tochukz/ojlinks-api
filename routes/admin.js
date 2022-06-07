@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
-const { Admin }  = require("../models");
-const { adminRegisterValidator, loginValidator } = require('../validators');
+const { Admin, Book }  = require("../models");
+const { adminRegisterValidator, loginValidator, bookCreateValidator } = require('../validators');
 
 router.post('/login', loginValidator, async (req, res, next) => {
   try {
@@ -56,6 +56,16 @@ router.get('/admins', async (req, res, next) => {
       attributes: ['firstname', 'lastname', 'email', 'createdAt', 'updatedAt'],
     });
     return res.json(admins);
+  } catch(err) {
+    return next(err);
+  }
+});
+
+router.post('/book/create', async (req, res, next) => { //bookCreateValidator
+  try {
+    const body = req.body;
+    const newBook = await Book.create(body);
+    return res.status(201).json(newBook);
   } catch(err) {
     return next(err);
   }

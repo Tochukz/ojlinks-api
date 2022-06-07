@@ -26,3 +26,12 @@ module.exports.loginValidator = [
     validator,
 ];
   
+module.exports.bookCreateValidator = [
+    body('title').notEmpty().withMessage('title is required'), 
+    body('author').notEmpty().withMessage('author is required'),  
+    body('price').notEmpty().withMessage('price is required'),  
+    body('edition').notEmpty().withMessage('edition is required'),  
+    body('details').notEmpty().withMessage('details is required'),
+    body('subcategoryId').notEmpty().withMessage('subcategoryId is required'),  
+    validator,
+];
