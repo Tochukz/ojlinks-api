@@ -96,13 +96,16 @@ router.get('/subcategories/:subcategoryId', async (req, res, next) => {
 router.get('/books', async (req, res, next) => {
   try {
     const books = await Book.findAll({
-      include: [
-        {
-          model: Subcategory, 
-          as: 'subcategory',
-          attributes: ['subcategoryId', 'name'],
+      include: {
+        model: Subcategory, 
+        as: 'subcategory',
+        attributes: ['subcategoryId', 'name'],
+        include: {
+          model: Category,
+          as: 'category',
+          attributes: ['categoryId', 'name'],
         }
-      ]
+      }
     });
     res.send(books);
   } catch(err) {
@@ -122,6 +125,11 @@ router.get('/books/:bookId', async (req, res, next) => {
           model: Subcategory, 
           as: 'subcategory',
           attributes: ['subcategoryId', 'name'],
+          include: {
+            model: Category,
+            as: 'category',
+            attributes: ['categoryId', 'name'],
+          }
         }
       ]
     });
