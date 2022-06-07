@@ -1,20 +1,63 @@
 const express = require('express');
+const bcrypt = require('bcrypt'); 
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
-router.post('/login', (req, res, next) => {
+const { Admin }  = require("../models");
+const { adminRegisterValidator, loginValidator } = require('../validators');
+
+router.post('/login', loginValidator, async (req, res, next) => {
   try {
     const { username, password} = req.body;
-    if (username == 'chucks') {
-        return res.json({
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZklkIjoxLCJwZXJtaXNzaW9uSWQiOjEsImlhdCI6MTYxNTQ3MzA1OH0.2q98iyk3MYkn2KjU7r1-e8k6-3ASkrlimDu5qW-7ffY'
-        });
+    
+    const admin = await Admin.findOne({
+      where: {
+        email: username
+      }  
+    });
+    
+    if (!admin) {
+      return res.status(401).json({message: 'Invalid username and/or password'});
     }
-
-    return res.status(401).json({message: 'Invalid username and/or password'});
+    const { password: hashPass, ...adminData} = admin.dataValues;
+    const isTrue = await bcrypt.compare(password, hashPass);
+    if (!isTrue) {
+      return res.status(401).json({message: 'Invalid username and/or password'});
+    }
+    
+    const { APP_URL, JWT_SECRET } = process.env;
+    adminData.token = jwt.sign({ adminId: admin.adminId}, JWT_SECRET, {    
+      issuer: APP_URL,
+      expiresIn: '8h',
+    });
+    delete admin.password;
+    return res.json(adminData);
 
   } catch(err) {
     return next(err);
   }
 });
 
+router.post('/register', adminRegisterValidator, async (req, res, next) => {
+  try {
+    const body = req.body;
+    body.password = await bcrypt.hash(body.password, 10);
+    const newAdmin = await Admin.create(body);
+    delete newAdmin.password;
+    return res.status(201).json(newAdmin);
+  } catch(err) {
+    return next(err);
+  }
+});
+
+router.get('/admins', async (req, res, next) => {
+  try {
+    const admins = await Admin.findAll({
+      attributes: ['firstname', 'lastname', 'email', 'createdAt', 'updatedAt'],
+    });
+    return res.json(admins);
+  } catch(err) {
+    return next(err);
+  }
+});
 module.exports = router;
